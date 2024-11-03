@@ -16,6 +16,11 @@ const items = [
     icon: "pi pi-fw pi-file-arrow-up",
     command: () => router.push("/upload"),
   },
+  {
+    label: "Mapper",
+    icon: "pi pi-fw pi-map",
+    command: () => router.push("/mapper"),
+  },
 ];
 
 const router = useRouter();
