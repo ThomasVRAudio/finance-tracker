@@ -11,6 +11,11 @@ const items = [
     icon: "pi pi-fw pi-chart-line",
     command: () => router.push("/charts"),
   },
+  {
+    label: "Upload",
+    icon: "pi pi-fw pi-file-arrow-up",
+    command: () => router.push("/upload"),
+  },
 ];
 
 const router = useRouter();

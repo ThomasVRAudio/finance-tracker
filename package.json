@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.2.1",
+    "chart.js": "^4.4.6",
     "install": "^0.13.0",
     "npm": "^10.9.0",
     "primeicons": "^7.0.0",
