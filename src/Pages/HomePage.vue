@@ -8,7 +8,6 @@
 </template>
 
 <style scoped>
-/* Optional styles for drawer content */
 h3 {
   margin: 0 0 1rem;
 }
