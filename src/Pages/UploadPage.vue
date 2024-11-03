@@ -1,143 +1,102 @@
 <script setup lang="ts">
-import { Button, DataTable, Column } from "primevue";
+import {
+  Button,
+  DataTable,
+  Column,
+  Paginator,
+  PageState,
+  Panel,
+} from "primevue";
 import { computed, onMounted, ref } from "vue";
-import * as XLSX from "xlsx";
-import IStatement from "../types/statements";
 
-const jsonData = ref<IStatement[]>([]);
-const uploadedFiles = ref<File[]>([]);
+import useStatements from "../composables/useStatements";
 
-const allFileNames = ref<IStatement[]>([]);
+const pageSize = ref(5);
+const currentPage = ref(0);
 
-const removedFiles = ref<string[]>([]);
-
-function onFileChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-
-  Array.from(input.files).forEach((statement) => {
-    uploadedFiles.value.push(statement);
-    allFileNames.value.push({ name: statement.name });
-  });
-}
+const {
+  onFileChange,
+  onUpload,
+  getJsonData,
+  clearStatements,
+  removeFile,
+  allFileNames,
+  uploadedFiles,
+  isUploading,
+} = useStatements();
 
 onMounted(() => {
-  loadJsonData();
+  getJsonData();
 });
 
-function loadJsonData() {
-  const storedData = localStorage.getItem("statementData");
-  if (storedData) {
-    jsonData.value = JSON.parse(storedData);
-  }
+const visibleStatements = computed(() => {
+  return allFileNames.value.slice(
+    currentPage.value * pageSize.value,
+    pageSize.value + currentPage.value * pageSize.value
+  );
+});
 
-  jsonData.value.forEach((statement) => {
-    allFileNames.value.push({ name: statement.name });
-  });
+function onPageChange(pageState: PageState) {
+  currentPage.value = pageState.page;
 }
 
-function onUpload() {
-  if (!uploadedFiles.value && !removedFiles.value) return;
-
-  if (removedFiles.value) {
-    let filteredData = jsonData.value.filter((data) => {
-      return !removedFiles.value.includes(data.name);
-    });
-
-    jsonData.value = filteredData;
-  }
-
-  const fileReadPromises = Array.from(uploadedFiles.value).map((file) => {
-    return new Promise<void>((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const result = e.target?.result;
-        if (!result || !(result instanceof ArrayBuffer)) {
-          reject(new Error("Failed to read file"));
-          return;
-        }
-
-        const data = new Uint8Array(result);
-        const workbook = XLSX.read(data, { type: "array" });
-
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-
-        const json = XLSX.utils.sheet_to_json(worksheet);
-
-        if (Array.isArray(json)) {
-          jsonData.value.push({
-            name: file.name,
-            data: json,
-          });
-          resolve();
-        } else {
-          reject(new Error("Parsed data is not an array"));
-        }
-      };
-
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsArrayBuffer(file);
-    });
-  });
-
-  Promise.all(fileReadPromises)
-    .then(() => {
-      localStorage.setItem("statementData", JSON.stringify(jsonData.value));
-    })
-    .catch((error) => {
-      console.error("Error processing files:", error);
-    });
-}
-
-function removeFile(index: number) {
-  allFileNames.value.splice(index, 1);
-  removedFiles.value.push(allFileNames.value[index].name);
-}
-
-function clearStatements() {
-  uploadedFiles.value.splice(0, uploadedFiles.value.length);
-  allFileNames.value.splice(0, allFileNames.value.length);
-  localStorage.setItem("statementData", JSON.stringify([]));
+function onPageSizeChange(rows: number) {
+  console.log("on page", rows);
+  pageSize.value = rows;
 }
 </script>
 
 <template>
   <h1>Upload Statements</h1>
   <div class="buttons">
-    <label class="button__choose" for="file-upload">Choose File</label>
-
-    <input
-      id="file-upload"
-      class="button__choose"
-      type="file"
-      @change="onFileChange"
-      accept=".xlsx,.xls"
-      multiple
-      style="display: none"
-    />
-    <Button
-      class="button__upload"
-      label="Upload"
-      icon="pi fw pi-upload"
-      @click="onUpload"
-    />
+    <div>
+      <label class="button__choose" for="file-upload">Choose Files</label>
+      <input
+        id="file-upload"
+        class="button__choose"
+        type="file"
+        @change="onFileChange"
+        accept=".xlsx,.xls"
+        multiple
+        style="display: none"
+      />
+      <Button
+        class="button__upload"
+        :disabled="!uploadedFiles.length"
+        label="Upload"
+        icon="pi fw pi-upload"
+        @click="onUpload"
+        :loading="isUploading"
+      />
+    </div>
     <Button
       class="button__clear"
-      label="Clear Statements"
+      label="Clear all Statements"
       icon="pi fw pi-minus"
       @click="clearStatements"
+      :disabled="!allFileNames.length"
     />
   </div>
-  <DataTable v-if="allFileNames.length" :value="allFileNames">
+  <DataTable v-if="visibleStatements.length" :value="visibleStatements">
     <Column field="name" header="File Name"> /></Column>
-    <Column header="Actions">
+    <Column header="">
       <template #body="slotProps">
         <Button icon="pi fw pi-minus" @click="removeFile(slotProps.index)" />
       </template>
     </Column>
   </DataTable>
+  <Paginator
+    v-if="visibleStatements.length"
+    @update:rows="onPageSizeChange"
+    @page="onPageChange"
+    :rows="pageSize"
+    :totalRecords="allFileNames.length"
+    :rowsPerPageOptions="[5, 10, 20, 50]"
+  ></Paginator>
+  <Panel class="panel" v-else header="You currently don't have any data">
+    <p>Add bank statements by clicking on the Choose Files button</p>
+  </Panel>
+  <Placeholder />
 </template>
 
 <style scoped>
@@ -154,7 +113,7 @@ h1 {
 .button__choose {
   line-height: normal;
   align-self: center;
-  background-color: var(--p-slate-500);
+  background-color: var(--p-slate-300);
   color: var(--primary-text-color);
   padding: var(--padding-sm) var(--padding-m);
   size: var(--p-primary-font-size);
@@ -166,5 +125,26 @@ h1 {
 
 .button__choose:hover {
   background-color: var(--p-slate-400);
+}
+
+.button__clear {
+  background-color: var(--p-orange-400);
+  border-color: var(--p-orange-400);
+}
+
+.button__clear:hover {
+  background-color: var(--p-orange-300) !important;
+  border-color: var(--p-orange-300) !important;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: var(--padding-m);
+}
+
+.panel {
+  width: 35rem;
+  margin: var(--margin-s);
 }
 </style>
