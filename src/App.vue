@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import "primeicons/primeicons.css";
 import { Menu, Button } from "primevue";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const items = [
@@ -17,6 +17,14 @@ const router = useRouter();
 const activeItem = ref(items[0]);
 const isDarkMode = ref(false);
 
+onMounted(() => {
+  const darkMode = localStorage.getItem("darkMode");
+
+  if (darkMode === "true") {
+    isDarkMode.value = true;
+  }
+});
+
 watch(isDarkMode, () => {
   if (isDarkMode.value) {
     if (!document.documentElement.classList.contains("dark-mode")) {
@@ -29,6 +37,7 @@ watch(isDarkMode, () => {
 
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value;
+  localStorage.setItem("darkMode", String(isDarkMode.value));
 }
 </script>
 

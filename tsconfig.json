@@ -11,7 +11,6 @@
     "isolatedModules": false,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "skipLibCheck": false,
     "outDir": "dist/electron"
   },
   "include": ["src/electron/**/*"],

@@ -18,6 +18,6 @@ app.use(PrimeVue, {
     },
   },
 });
-app.use(createPinia()); //use pinia
-app.use(router); //use router
+app.use(createPinia());
+app.use(router);
 app.mount("#app");
