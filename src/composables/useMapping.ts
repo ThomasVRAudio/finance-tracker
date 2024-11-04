@@ -4,7 +4,6 @@ import IColumnMapping from "../types/mapper";
 export function useMapping() {
   const mapping = ref<IColumnMapping>({
     bookDate: "",
-    account: "",
     amount: "",
     accountNumber: "",
     debitCredit: "",

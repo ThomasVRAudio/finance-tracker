@@ -10,6 +10,7 @@ export function useStatements() {
   const isUploading = ref(false);
 
   function getJsonData() {
+    jsonData.value.splice(0, jsonData.value.length);
     const storedData = localStorage.getItem("statementData");
     if (storedData) {
       jsonData.value = JSON.parse(storedData);
@@ -112,6 +113,7 @@ export function useStatements() {
     allFileNames,
     uploadedFiles,
     isUploading,
+    jsonData,
   };
 }
 

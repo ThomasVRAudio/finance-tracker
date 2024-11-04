@@ -1,24 +1,17 @@
 <script setup lang="ts">
 import { $dt } from "@primevue/themes";
-import { Select } from "primevue";
+import { FloatLabel, MultiSelect, Select } from "primevue";
 import Chart from "primevue/chart";
-import { computed, ref } from "vue";
-import IVisualizerType from "../types/charts";
+import { computed, onMounted, ref } from "vue";
+import { IVisualizerType } from "../types/charts";
+import { useCharts } from "../composables/useCharts";
 
-const data = [
-  { month: "January", credit: 1200.45, debit: 120.45 },
-  { month: "February", credit: 310.95, debit: 560.78 },
-  { month: "March", credit: 1500.8, debit: 325.67 },
-  { month: "April", credit: 275.6, debit: 480.56 },
-  { month: "May", credit: 4020.3, debit: 2390.33 },
-  { month: "June", credit: -250.75, debit: 210.49 },
-  { month: "July", credit: -3500.45, debit: 1780.29 },
-  { month: "August", credit: -1800.55, debit: 1520.11 },
-  { month: "September", credit: 950.85, debit: 412.75 },
-  { month: "October", credit: -75.4, debit: 530.66 },
-  { month: "November", credit: 1800.9, debit: 325.48 },
-  { month: "December", credit: 2250.15, debit: 890.37 },
-];
+const { setVisualizerData, graphData, accountList, ignoredAccounts, labels } =
+  useCharts();
+
+onMounted(() => {
+  setVisualizerData();
+});
 
 const visualizerTypes: IVisualizerType[] = [
   {
@@ -35,11 +28,13 @@ const visualizerChoice = ref<IVisualizerType>({ name: "Line", value: "line" });
 
 const chartData = computed(() => {
   return {
-    labels: data.map((item) => item.month),
+    labels: labels.value,
     datasets: [
       {
         label: "Total credit",
-        data: data.map((item) => item.credit),
+        data: Object.keys(graphData.value).map(
+          (key) => graphData.value[key].credit
+        ),
         borderWidth: 1,
         borderColor: $dt("cyan.300").value,
         backgroundColor: $dt("cyan.300").value,
@@ -47,7 +42,9 @@ const chartData = computed(() => {
       },
       {
         label: "Total debit",
-        data: data.map((item) => item.debit),
+        data: Object.keys(graphData.value).map(
+          (key) => graphData.value[key].debit
+        ),
         borderWidth: 1,
         borderColor: $dt("red.500").value,
         backgroundColor: $dt("red.500").value,
@@ -55,7 +52,9 @@ const chartData = computed(() => {
       },
       {
         label: "Difference",
-        data: data.map((item) => item.credit - item.debit),
+        data: Object.keys(graphData.value).map(
+          (key) => graphData.value[key].credit - graphData.value[key].debit
+        ),
         borderWidth: 1,
         borderColor: $dt("amber.400").value,
         backgroundColor:
@@ -80,6 +79,20 @@ const chartData = computed(() => {
       name="type"
       optionLabel="name"
     />
+
+    <FloatLabel>
+      <MultiSelect
+        id="over_label"
+        v-model="ignoredAccounts"
+        :options="accountList"
+        filter
+        placeholder=""
+        class="multi-select"
+        showClear
+        :maxSelectedLabels="1"
+      />
+      <label for="over_label">Ignore Accounts</label>
+    </FloatLabel>
   </div>
   <Chart
     :type="visualizerChoice.value"
@@ -108,6 +121,11 @@ ul li {
 
 .selector__container {
   display: flex;
+  align-items: center;
   justify-content: end;
+}
+
+.multi-select {
+  width: 25rem;
 }
 </style>

@@ -52,16 +52,6 @@ onMounted(() => {
 
       <InputGroup class="input__group">
         <InputGroupAddon>
-          <i class="pi fw pi-user"></i>
-        </InputGroupAddon>
-        <FloatLabel>
-          <InputText id="account" v-model="mapping.account" />
-          <label for="account">Account</label>
-        </FloatLabel>
-      </InputGroup>
-
-      <InputGroup class="input__group">
-        <InputGroupAddon>
           <i class="pi fw pi-euro"></i>
         </InputGroupAddon>
         <FloatLabel>
@@ -69,8 +59,7 @@ onMounted(() => {
           <label for="amount">Amount</label>
         </FloatLabel>
       </InputGroup>
-    </div>
-    <div>
+
       <InputGroup class="input__group">
         <InputGroupAddon>
           <i class="pi fw pi-credit-card"></i>
@@ -80,7 +69,8 @@ onMounted(() => {
           <label for="accountNumber">Account Number</label>
         </FloatLabel>
       </InputGroup>
-
+    </div>
+    <div>
       <InputGroup class="input__group">
         <InputGroupAddon>
           <i class="pi fw pi-chart-line"></i>
@@ -100,8 +90,7 @@ onMounted(() => {
           <label for="counterpartyName">Counterparty Name</label>
         </FloatLabel>
       </InputGroup>
-    </div>
-    <div>
+
       <InputGroup class="input__group">
         <InputGroupAddon>
           <i class="pi fw pi-address-book"></i>
@@ -111,7 +100,8 @@ onMounted(() => {
           <label for="counterAccount">Counter Account</label>
         </FloatLabel>
       </InputGroup>
-
+    </div>
+    <div>
       <InputGroup class="input__group">
         <InputGroupAddon>
           <i class="pi fw pi-key"></i>

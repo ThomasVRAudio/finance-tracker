@@ -1,6 +1,5 @@
 export default interface IColumnMapping {
   bookDate: string;
-  account: string;
   amount: string;
   accountNumber: string;
   debitCredit: string;

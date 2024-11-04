@@ -1,4 +1,4 @@
 export default interface IStatement {
   name: string;
-  data?: unknown[];
+  data?: { [key: string]: any };
 }

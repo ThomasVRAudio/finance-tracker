@@ -96,7 +96,6 @@ function onPageSizeChange(rows: number) {
   <Panel class="panel" v-else header="You currently don't have any data">
     <p>Add bank statements by clicking on the Choose Files button</p>
   </Panel>
-  <Placeholder />
 </template>
 
 <style scoped>
