@@ -1,9 +1,9 @@
 import { ref, watch } from "vue";
-import IStatement from "../types/statements";
 import useMapping from "./useMapping";
 import {
   IChartRow,
   IGraphData,
+  IGraphOptions,
   IGraphPoint,
   IYearlyData,
 } from "../types/charts";
@@ -17,6 +17,7 @@ export function useCharts() {
   const accountList = ref<string[]>([]);
   const ignoredAccounts = ref<string[]>([]);
   const labels = ref<string[]>([]);
+  const options = ref<IGraphOptions>({ year: 2024 });
 
   const months = [
     "January",
@@ -37,12 +38,12 @@ export function useCharts() {
 
   function setVisualizerData() {
     visualizerData.value.splice(0, visualizerData.value.length);
-    console.log("visualizer: ", visualizerData.value);
+
     getJsonData();
     getMapping();
     mapData();
     filterData();
-    sortDataByMonths(2024);
+    sortData(options.value);
     setGraphData();
   }
 
@@ -75,22 +76,29 @@ export function useCharts() {
     });
   }
 
-  watch(ignoredAccounts, () => {
-    setVisualizerData();
-  });
-
-  function sortDataByMonths(year: number) {
+  function sortData(options?: IGraphOptions) {
     orderedData.value = {};
 
     if (!visualizerData.value.length) return;
 
     const startDate = new Date(1900, 0, 1);
 
+    let hasSelectedRange = !!options?.dateRange?.[0];
+
+    if (options?.year && !hasSelectedRange) {
+      sortByYear(options, startDate);
+    } else if (options?.dateRange) {
+      sortByDay(options, startDate);
+    }
+  }
+
+  function sortByYear(options: IGraphOptions, startDate: Date) {
     visualizerData.value.forEach((row: IChartRow) => {
       let bookDate = new Date(
         startDate.getTime() + (row.bookDate - 1) * 24 * 60 * 60 * 1000
       );
-      if (bookDate.getFullYear() !== year) return;
+
+      if (bookDate.getFullYear() !== options.year) return;
 
       const monthKey = bookDate.getMonth();
 
@@ -110,7 +118,46 @@ export function useCharts() {
       });
   }
 
+  function sortByDay(options: IGraphOptions, startDate: Date) {
+    if (!options.dateRange) return;
+
+    const firstDate = options.dateRange[0];
+    const lastDate = options.dateRange[1];
+
+    visualizerData.value.forEach((row: IChartRow) => {
+      let bookDate = new Date(
+        startDate.getTime() + (row.bookDate - 1) * 24 * 60 * 60 * 1000
+      );
+
+      if (isNaN(bookDate.getTime())) return;
+
+      if (bookDate < firstDate || bookDate > lastDate) return;
+      const dayKey = formatDateToDDMM(bookDate);
+
+      if (!orderedData.value[dayKey]) {
+        orderedData.value[dayKey] = [];
+      }
+
+      orderedData.value[dayKey].push(row);
+    });
+
+    labels.value = [];
+
+    Object.keys(orderedData.value)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .forEach((key) => {
+        labels.value.push(String(key));
+      });
+  }
+
+  function formatDateToDDMM(date: Date) {
+    const day = String(date.getDate()).padStart(2, "0"); // Add leading zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based, so add 1
+    return `${day}/${month}`;
+  }
+
   function setGraphData() {
+    graphData.value = {};
     Object.keys(orderedData.value).forEach((key) => {
       const graphPoint: IGraphPoint = { credit: 0, debit: 0 };
 
@@ -121,24 +168,28 @@ export function useCharts() {
           graphPoint.debit += row.amount;
         } else if (debitCredit === "credit") {
           graphPoint.credit += row.amount;
-          console.log(row.amount);
         } else {
           console.log("not credit or debit: ", debitCredit);
         }
       });
       graphData.value[key] = graphPoint;
     });
+
+    watch(ignoredAccounts, () => {
+      setVisualizerData();
+    });
   }
 
   return {
     visualizerData,
     setVisualizerData,
-    sortDataByMonths,
+    sortDataByMonths: sortData,
     setGraphData,
     graphData,
     accountList,
     ignoredAccounts,
     labels,
+    options,
   };
 }
 

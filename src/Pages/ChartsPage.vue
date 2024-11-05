@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { $dt } from "@primevue/themes";
-import { FloatLabel, MultiSelect, Select } from "primevue";
+import { FloatLabel, MultiSelect, Select, DatePicker } from "primevue";
 import Chart from "primevue/chart";
-import { computed, onMounted, ref } from "vue";
-import { IVisualizerType } from "../types/charts";
+import { computed, onMounted, ref, watch } from "vue";
+import { IGraphOptions, IVisualizerType } from "../types/charts";
 import { useCharts } from "../composables/useCharts";
 
-const { setVisualizerData, graphData, accountList, ignoredAccounts, labels } =
-  useCharts();
+const {
+  setVisualizerData,
+  graphData,
+  accountList,
+  ignoredAccounts,
+  labels,
+  options,
+} = useCharts();
 
 onMounted(() => {
-  setVisualizerData();
+  setVisualizerData(options.value);
 });
 
 const visualizerTypes: IVisualizerType[] = [
@@ -23,6 +29,13 @@ const visualizerTypes: IVisualizerType[] = [
     value: "bar",
   },
 ];
+
+const dates = ref<Date[]>();
+
+watch(dates, () => {
+  options.value.dateRange = dates.value;
+  setVisualizerData(options.value);
+});
 
 const visualizerChoice = ref<IVisualizerType>({ name: "Line", value: "line" });
 
@@ -72,27 +85,32 @@ const chartData = computed(() => {
 <template>
   <h1>Visualizer</h1>
   <div class="selector__container">
-    <Select
-      class="selector"
-      v-model="visualizerChoice"
-      :options="visualizerTypes"
-      name="type"
-      optionLabel="name"
-    />
-
-    <FloatLabel>
-      <MultiSelect
-        id="over_label"
-        v-model="ignoredAccounts"
-        :options="accountList"
-        filter
-        placeholder=""
-        class="multi-select"
-        showClear
-        :maxSelectedLabels="1"
+    <div class="filters__left">
+      <DatePicker v-model="dates" selectionMode="range" />
+    </div>
+    <div class="filters__right">
+      <Select
+        class="selector"
+        v-model="visualizerChoice"
+        :options="visualizerTypes"
+        name="type"
+        optionLabel="name"
       />
-      <label for="over_label">Ignore Accounts</label>
-    </FloatLabel>
+
+      <FloatLabel>
+        <MultiSelect
+          id="over_label"
+          v-model="ignoredAccounts"
+          :options="accountList"
+          filter
+          placeholder=""
+          class="multi-select"
+          showClear
+          :maxSelectedLabels="1"
+        />
+        <label for="over_label">Ignore Accounts</label>
+      </FloatLabel>
+    </div>
   </div>
   <Chart
     :type="visualizerChoice.value"
@@ -122,10 +140,15 @@ ul li {
 .selector__container {
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: space-between;
 }
 
 .multi-select {
   width: 25rem;
+}
+
+.filters__right {
+  display: flex;
+  align-items: center;
 }
 </style>

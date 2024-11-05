@@ -26,3 +26,8 @@ export interface IGraphPoint {
   credit: number;
   debit: number;
 }
+
+export interface IGraphOptions {
+  dateRange?: Date[];
+  year?: number;
+}
