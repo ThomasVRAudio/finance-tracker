@@ -16,7 +16,7 @@ const {
 } = useCharts();
 
 onMounted(() => {
-  setVisualizerData(options.value);
+  setVisualizerData();
 });
 
 const visualizerTypes: IVisualizerType[] = [
@@ -34,7 +34,7 @@ const dates = ref<Date[]>();
 
 watch(dates, () => {
   options.value.dateRange = dates.value;
-  setVisualizerData(options.value);
+  setVisualizerData();
 });
 
 const visualizerChoice = ref<IVisualizerType>({ name: "Line", value: "line" });
