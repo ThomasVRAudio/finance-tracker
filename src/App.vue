@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import "primeicons/primeicons.css";
-import { Menu, Button } from "primevue";
+import { Menu, Button, ToggleSwitch } from "primevue";
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
@@ -43,24 +43,24 @@ watch(isDarkMode, () => {
   } else {
     document.documentElement.classList.remove("dark-mode");
   }
+  localStorage.setItem("darkMode", String(isDarkMode.value));
 });
 
-function toggleTheme() {
-  isDarkMode.value = !isDarkMode.value;
-  localStorage.setItem("darkMode", String(isDarkMode.value));
-}
 </script>
 
 <template>
   <div class="layout">
     <div class="menu-holder">
       <Menu :model="items" :active-item="activeItem" />
-      <Button
-        class="theme__button"
-        :icon="isDarkMode ? 'pi pi-moon' : 'pi pi-sun'"
-        @click="toggleTheme"
+      <ToggleSwitch
+      class="theme__button"
+      v-model="isDarkMode"
         aria-label="Toggle Light/Dark Mode"
-      />
+      >
+   <template #handle="{ checked }" >
+    <i :class="['pi', { 'pi-moon': checked, 'pi-sun': !checked }, 'icon-margin']" />
+   </template>
+    </ToggleSwitch>
     </div>
 
     <div class="content">
@@ -92,5 +92,9 @@ function toggleTheme() {
 
 .theme__button {
   margin: var(--margin-s);
+}
+
+.icon-margin {
+  transform: scale(0.75);
 }
 </style>
