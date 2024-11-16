@@ -39,6 +39,9 @@ export function useCharts() {
   function setVisualizerData() {
     visualizerData.value.splice(0, visualizerData.value.length);
 
+    let ignored = localStorage.getItem("ignoredAccounts");
+    if (ignored) ignoredAccounts.value = JSON.parse(ignored);
+
     getJsonData();
     getMapping();
     mapData();
@@ -72,7 +75,10 @@ export function useCharts() {
 
   function filterData() {
     visualizerData.value = visualizerData.value.filter((row) => {
-      return !ignoredAccounts.value.includes(row.counterpartyName);
+      return (
+        ignoredAccounts.value &&
+        !ignoredAccounts.value.includes(row.counterpartyName)
+      );
     });
   }
 
@@ -180,6 +186,18 @@ export function useCharts() {
     });
   }
 
+  function setIgnoredAccounts() {
+    let ignored: string[] = [];
+    if (ignoredAccounts.value) {
+      ignoredAccounts.value.forEach((i) => {
+        ignored.push(i);
+      });
+    }
+    localStorage.setItem(
+      "ignoredAccounts",
+      JSON.stringify(ignoredAccounts.value)
+    );
+  }
   return {
     visualizerData,
     setVisualizerData,
@@ -191,6 +209,7 @@ export function useCharts() {
     labels,
     options,
     orderedData,
+    setIgnoredAccounts,
   };
 }
 

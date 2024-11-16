@@ -41,7 +41,6 @@ function onPageChange(pageState: PageState) {
 }
 
 function onPageSizeChange(rows: number) {
-  console.log("on page", rows);
   pageSize.value = rows;
 }
 </script>
@@ -51,31 +50,13 @@ function onPageSizeChange(rows: number) {
   <div class="buttons">
     <div>
       <label class="button__choose" for="file-upload">Choose Files</label>
-      <input
-        id="file-upload"
-        class="button__choose"
-        type="file"
-        @change="onFileChange"
-        accept=".xlsx,.xls"
-        multiple
-        style="display: none"
-      />
-      <Button
-        class="button__upload"
-        :disabled="!uploadedFiles.length"
-        label="Upload"
-        icon="pi fw pi-upload"
-        @click="onUpload"
-        :loading="isUploading"
-      />
+      <input id="file-upload" class="button__choose" type="file" @change="onFileChange" accept=".xlsx,.xls" multiple
+        style="display: none" />
+      <Button class="button__upload" :disabled="!uploadedFiles.length" label="Upload" icon="pi fw pi-upload"
+        @click="onUpload" :loading="isUploading" />
     </div>
-    <Button
-      class="button__clear"
-      label="Clear all Statements"
-      icon="pi fw pi-minus"
-      @click="clearStatements"
-      :disabled="!allFileNames.length"
-    />
+    <Button class="button__clear" label="Clear all Statements" icon="pi fw pi-minus" @click="clearStatements"
+      :disabled="!allFileNames.length" />
   </div>
   <DataTable v-if="visibleStatements.length" :value="visibleStatements">
     <Column field="name" header="File Name"> /></Column>
@@ -85,14 +66,8 @@ function onPageSizeChange(rows: number) {
       </template>
     </Column>
   </DataTable>
-  <Paginator
-    v-if="visibleStatements.length"
-    @update:rows="onPageSizeChange"
-    @page="onPageChange"
-    :rows="pageSize"
-    :totalRecords="allFileNames.length"
-    :rowsPerPageOptions="[5, 10, 20, 50]"
-  ></Paginator>
+  <Paginator v-if="visibleStatements.length" @update:rows="onPageSizeChange" @page="onPageChange" :rows="pageSize"
+    :totalRecords="allFileNames.length" :rowsPerPageOptions="[5, 10, 20, 50]"></Paginator>
   <Panel class="panel" v-else header="You currently don't have any data">
     <p>Add bank statements by clicking on the Choose Files button</p>
   </Panel>

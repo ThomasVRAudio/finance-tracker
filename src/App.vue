@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import "primeicons/primeicons.css";
-import { Menu, Button, ToggleSwitch } from "primevue";
+import { Button, Drawer, ToggleSwitch } from "primevue";
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
@@ -27,6 +27,7 @@ const router = useRouter();
 const activeItem = ref(items[0]);
 const isDarkMode = ref(false);
 
+const menuIsOpen = ref(true);
 onMounted(() => {
   const darkMode = localStorage.getItem("darkMode");
 
@@ -49,15 +50,26 @@ watch(isDarkMode, () => {
 </script>
 
 <template>
-  <div class="layout">
-    <div class="menu-holder">
-      <Menu :model="items" :active-item="activeItem" />
+  <div>
+    <Button class="menu__button" icon="pi pi-bars" @click="menuIsOpen = true" />
+    <Drawer class="menu-holder" v-model:visible="menuIsOpen" position="left">
+      <template #header>
+        <h3>Menu</h3>
+      </template>
+      <ul class="menu-list">
+        <li v-for="item in items" :key="item.label" @click="item.command">
+          <i :class="item.icon" class="menu-icon"></i>
+          <span>{{ item.label }}</span>
+        </li>
+      </ul>
       <ToggleSwitch class="theme__button" v-model="isDarkMode" aria-label="Toggle Light/Dark Mode">
         <template #handle="{ checked }">
           <i :class="['pi', { 'pi-moon': checked, 'pi-sun': !checked }, 'icon-margin']" />
         </template>
       </ToggleSwitch>
-    </div>
+    </Drawer>
+  </div>
+  <div class="layout">
 
     <div class="content">
       <router-view />
@@ -66,9 +78,40 @@ watch(isDarkMode, () => {
 </template>
 
 <style scoped>
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu__button {
+  background-color: var(--p-gray-500);
+  border-color: var(--p-gray-500);
+  margin: 20px;
+}
+
+.menu-list li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.menu-list li:hover {
+  background-color: var(--p-primary-color);
+  border-radius: 10px;
+}
+
+.menu-icon {
+  margin-right: 10px;
+}
+
 .layout {
   display: flex;
-  /* Use flexbox for layout */
   height: 100%;
 }
 
