@@ -190,6 +190,7 @@ export function useCharts() {
     ignoredAccounts,
     labels,
     options,
+    orderedData,
   };
 }
 

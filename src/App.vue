@@ -52,15 +52,11 @@ watch(isDarkMode, () => {
   <div class="layout">
     <div class="menu-holder">
       <Menu :model="items" :active-item="activeItem" />
-      <ToggleSwitch
-      class="theme__button"
-      v-model="isDarkMode"
-        aria-label="Toggle Light/Dark Mode"
-      >
-   <template #handle="{ checked }" >
-    <i :class="['pi', { 'pi-moon': checked, 'pi-sun': !checked }, 'icon-margin']" />
-   </template>
-    </ToggleSwitch>
+      <ToggleSwitch class="theme__button" v-model="isDarkMode" aria-label="Toggle Light/Dark Mode">
+        <template #handle="{ checked }">
+          <i :class="['pi', { 'pi-moon': checked, 'pi-sun': !checked }, 'icon-margin']" />
+        </template>
+      </ToggleSwitch>
     </div>
 
     <div class="content">
@@ -71,7 +67,8 @@ watch(isDarkMode, () => {
 
 <style scoped>
 .layout {
-  display: flex; /* Use flexbox for layout */
+  display: flex;
+  /* Use flexbox for layout */
   height: 100%;
 }
 
@@ -88,10 +85,13 @@ watch(isDarkMode, () => {
   border-width: 1px;
   border-style: solid;
   border-color: var(--p-menu-border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .theme__button {
-  margin: var(--margin-s);
+  margin: 10px;
 }
 
 .icon-margin {
