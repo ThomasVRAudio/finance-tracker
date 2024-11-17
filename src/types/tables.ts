@@ -1,3 +1,3 @@
 import { IChartRow } from "./charts";
 
-export type ITableRow = Omit<IChartRow, "bookDate"> & { bookDate: string };
+export type ITableRow = IChartRow & { bookDateFormatted: string };

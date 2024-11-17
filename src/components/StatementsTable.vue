@@ -13,18 +13,21 @@ const tableContent: ComputedRef<ITableRow[]> = computed(() => {
         orderedData.value[month].forEach((row) => {
             const date = new Date(startDate);
             const formattedDate = new Date(date.setDate(date.getDate() + row.bookDate - 1)).toLocaleDateString('en-GB');
-            data.push({ ...row, bookDate: formattedDate });
+            data.push({ ...row, bookDateFormatted: formattedDate });
         })
     })
     return data;
 });
 
+function sortDate() {
+
+}
 </script>
 <template>
 
     <DataTable class="datatable" :value="tableContent" paginator paginator-position="bottom" showGridlines stripedRows
         :rows="10" :rowsPerPageOptions="[5, 10, 25, 50, 100]">
-        <Column sortable class="column" field="bookDate" header="Book Date" />
+        <Column sortable sortField="bookDate" class="column" field="bookDateFormatted" header="Book Date" />
         <Column sortable sortField="amount" header="Amount"><template style="background-color: green;" #body="{ data }">
                 <span :class="data.debitCredit === 'Credit' ? 'credit' : 'debit'">
                     €{{ data.amount }}</span></template>

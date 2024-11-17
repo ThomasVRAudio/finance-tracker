@@ -13,7 +13,6 @@ const {
     setIgnoredAccounts,
     accountList,
     options,
-    orderedData,
     setVisualizerData
 } = useCharts();
 const visualizerTypes: IVisualizerType[] = [
