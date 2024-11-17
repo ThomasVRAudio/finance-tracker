@@ -170,7 +170,6 @@ export function useCharts() {
       orderedData.value[key].forEach((row: IChartRow) => {
         let debitCredit = row.debitCredit.toLocaleLowerCase().trim();
         if (debitCredit === "debet") {
-          // need to map data here as well
           graphPoint.debit += row.amount;
         } else if (debitCredit === "credit") {
           graphPoint.credit += row.amount;
@@ -179,10 +178,6 @@ export function useCharts() {
         }
       });
       graphData.value[key] = graphPoint;
-    });
-
-    watch(ignoredAccounts, () => {
-      setVisualizerData();
     });
   }
 
@@ -197,6 +192,7 @@ export function useCharts() {
       "ignoredAccounts",
       JSON.stringify(ignoredAccounts.value)
     );
+    setVisualizerData();
   }
   return {
     visualizerData,

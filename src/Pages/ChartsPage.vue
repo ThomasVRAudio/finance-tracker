@@ -1,27 +1,28 @@
 <script setup lang="ts">
-import { $dt } from "@primevue/themes";
-import { FloatLabel, MultiSelect, Select, DatePicker, DataTable, Column, Card, Splitter } from "primevue";
-import Chart from "primevue/chart";
-import { computed, ComputedRef, onMounted, ref, watch } from "vue";
-import { IChartRow, IGraphOptions, IVisualizerType } from "../types/charts";
+import { Card, DatePicker, FloatLabel, MultiSelect, Select } from "primevue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useCharts } from "../composables/useCharts";
+import { ITableRow } from "../types/tables";
+import StatementsTable from "../components/StatementsTable.vue";
+import { IVisualizerType } from "../types/charts";
+import { $dt } from "@primevue/themes";
+import Chart from "primevue/chart";
 
 const {
+  orderedData,
   setVisualizerData,
   graphData,
-  accountList,
-  ignoredAccounts,
   labels,
-  options,
-  orderedData,
-  setIgnoredAccounts
+  ignoredAccounts,
+  setIgnoredAccounts,
+  accountList,
+  options
 } = useCharts();
+
 
 onMounted(() => {
   setVisualizerData();
 });
-
-type ITableRow = Omit<IChartRow, 'bookDate'> & { bookDate: string };
 
 const tableContent = ref<ITableRow[]>([]);
 
@@ -35,13 +36,6 @@ const visualizerTypes: IVisualizerType[] = [
     value: "bar",
   },
 ];
-
-const dates = ref<Date[]>();
-
-watch(dates, () => {
-  options.value.dateRange = dates.value;
-  setVisualizerData();
-});
 
 watch(() => Object.keys(orderedData.value).length, () => {
   let data: ITableRow[] = [];
@@ -58,7 +52,6 @@ watch(() => Object.keys(orderedData.value).length, () => {
 
 
 const visualizerChoice = ref<IVisualizerType>({ name: "Line", value: "line" });
-
 const chartData = computed(() => {
   return {
     labels: labels.value,
@@ -99,16 +92,21 @@ const chartData = computed(() => {
       },
     ],
   };
+})
+
+const dates = ref<Date[]>();
+
+watch(dates, () => {
+  options.value.dateRange = dates.value;
+  setVisualizerData();
 });
 </script>
 
 <template>
   <div class="page">
-
     <Card class="card">
       <template #title>Visualizer</template>
       <template #content>
-
         <div class="selector__container">
           <div class="filters__left">
             <DatePicker class="datepicker" v-model="dates" selectionMode="range" />
@@ -131,20 +129,7 @@ const chartData = computed(() => {
     <div class="divider"></div>
     <Card class="card">
       <template #content>
-        <DataTable class="datatable" :value="tableContent" paginator paginator-position="bottom" showGridlines
-          stripedRows :rows="10" :rowsPerPageOptions="[5, 10, 25, 50, 100]">
-          <Column sortable class="column" field="bookDate" header="Book Date" />
-          <Column sortable sortField="amount" header="Amount"><template style="background-color: green;"
-              #body="{ data }"> <span :class="data.debitCredit === 'Credit' ? 'credit' : 'debit'">
-                €{{ data.amount }}</span></template>
-          </Column>
-          <Column sortable class="column" field="debitCredit" header="Debit / Credit" />
-          <Column sortable class="column" field="counterAccount" header="Counter Account" />
-          <Column sortable class="column" field="counterpartyName" header="Counterparty Name" />
-          <Column sortable class="column" field="accountNumber" header="Account Number" />
-          <Column sortable class="column" field="code" header="Code" />
-          <Column class="column" field="description" header="Description" />
-        </DataTable>
+        <StatementsTable :tableContent="tableContent" />
       </template>
     </Card>
   </div>
@@ -172,7 +157,6 @@ ul li {
 
 .divider {
   height: var(--margin-l);
-
 }
 
 .card {
@@ -183,11 +167,6 @@ ul li {
 .selector {
   margin: var(--margin-s);
 }
-
-.datatable {
-  font-size: 12px;
-}
-
 
 .selector__container {
   display: flex;
@@ -206,23 +185,5 @@ ul li {
 .filters__right {
   display: flex;
   align-items: center;
-}
-
-.debit {
-  background-color: var(--p-red-400);
-}
-
-.credit {
-  background-color: var(--p-green-400);
-}
-
-.credit,
-.debit {
-  padding: var(--margin-xs) var(--margin-s);
-  border-radius: 6px;
-  text-wrap: nowrap;
-  color: var(--p-slate-900);
-  font-size: 14px;
-  font-weight: 400;
 }
 </style>
