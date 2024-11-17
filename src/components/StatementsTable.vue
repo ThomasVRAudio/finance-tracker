@@ -37,7 +37,7 @@ const filters = ref({
     counterpartyName: { value: null, matchMode: FilterMatchMode.CONTAINS },
     bookDateFormatted: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     amount: { value: amountFilterButton.value.value, matchMode: amountFilterButton.value.matchMode },
-    debitCredit: { value: null, matchMode: FilterMatchMode.EQUALS },
+    debitCredit: { value: null, matchMode: FilterMatchMode.CONTAINS },
     counterAccount: { value: null, matchMode: FilterMatchMode.CONTAINS },
     accountNumber: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     description: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -69,13 +69,14 @@ function setAmountFilter() {
                 </IconField>
             </div>
         </template>
-        <Column sortable sortField="bookDate" class="column" field="bookDateFormatted" header="Book Date"
-            filterField="bookDateFormatted" :showFilterMenu="false">
+        <Column sortable style="width: 10%" sortField="bookDate" class="column" field="bookDateFormatted"
+            header="Book Date" filterField="bookDateFormatted" :showFilterMenu="false">
             <template #filter="{ filterModel, filterCallback }">
                 <InputText class="input" v-model="filterModel.value" type="text" @input="filterCallback()" />
             </template>
         </Column>
-        <Column class="column" sortable sortField="amount" header="Amount" filterField="amount" :showFilterMenu="false">
+        <Column class="column" style="width: 10%" sortable sortField="amount" header="Amount" filterField="amount"
+            :showFilterMenu="false">
             <template #header>
 
                 <Button @click="setAmountFilter">
@@ -92,31 +93,24 @@ function setAmountFilter() {
             </template>
         </Column>
         <Column sortable class="column" field="debitCredit" header="Debit / Credit" filterField="debitCredit"
-            :showFilterMenu="false">
+            :showFilterMenu="false" style="width: 10%">
             <template #filter="{ filterModel, filterCallback }">
                 <InputText class="input" v-model="filterModel.value" type="text" @input="filterCallback()" />
             </template>
         </Column>
         <Column sortable class="column" field="counterAccount" header="Counter Account" filterField="counterAccount"
-            :showFilterMenu="false">
+            :showFilterMenu="false" style="width: 15%">
 
             <template #filter="{ filterModel, filterCallback }">
                 <InputText class="input" v-model="filterModel.value" type="text" @input="filterCallback()" />
             </template>
         </Column>
-        <Column sortable class="column" field="counterpartyName" filterField="counterpartyName" :showFilterMenu="false"
-            header="Counterparty Name">
+        <Column sortable class="column" field="counterpartyName" style="width: 15%" filterField="counterpartyName"
+            :showFilterMenu="false" header="Counterparty Name">
             <template #filter="{ filterModel, filterCallback }">
                 <InputText class="input" v-model="filterModel.value" type="text" @input="filterCallback()" />
             </template>
         </Column>
-        <Column sortable class="column" field="accountNumber" header="Account Number" filterField="accountNumber"
-            :showFilterMenu="false">
-            <template #filter="{ filterModel, filterCallback }">
-                <InputText class="input" v-model="filterModel.value" type="text" @input="filterCallback()" />
-            </template>
-        </Column>
-        <Column class="column" field="code" header="Code" style="max-width: 1rem" />
         <Column sortable class="column" field="description" header="Description" filterField="description"
             :showFilterMenu="false">
             <template #body="{ data }">
@@ -146,7 +140,8 @@ function setAmountFilter() {
 }
 
 .column {
-    max-width: 100px;
+    max-width: 1rem;
+
 }
 
 .input {
