@@ -1,10 +1,23 @@
 <script setup lang="ts">
+import { computed, ComputedRef, onMounted, ref, watch } from 'vue';
+import { useCharts } from '../composables/useCharts';
 import { ITableRow } from '../types/tables'
 import { DataTable, Column } from 'primevue';
 
-defineProps<{
-    tableContent: ITableRow[]
-}>()
+const { orderedData } = useCharts();
+
+const tableContent: ComputedRef<ITableRow[]> = computed(() => {
+    let data: ITableRow[] = [];
+    const startDate = new Date(1900, 0, 1);
+    Object.keys(orderedData.value).forEach((month) => {
+        orderedData.value[month].forEach((row) => {
+            const date = new Date(startDate);
+            const formattedDate = new Date(date.setDate(date.getDate() + row.bookDate - 1)).toLocaleDateString('en-GB');
+            data.push({ ...row, bookDate: formattedDate });
+        })
+    })
+    return data;
+});
 
 </script>
 <template>
