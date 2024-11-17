@@ -103,8 +103,8 @@ function sortByYear(options: IGraphOptions, startDate: Date) {
       startDate.getTime() + (row.bookDate - 1) * 24 * 60 * 60 * 1000
     );
 
-    if (bookDate.getFullYear() !== options.year) return;
-
+    if (bookDate.getFullYear() !== options.year || isNaN(bookDate.getTime()))
+      return;
     const monthKey = bookDate.getMonth();
 
     if (!orderedData.value[monthKey]) {
@@ -113,9 +113,7 @@ function sortByYear(options: IGraphOptions, startDate: Date) {
 
     orderedData.value[monthKey].push(row);
   });
-
   labels.value = [];
-
   Object.keys(orderedData.value)
     .sort((a, b) => parseInt(a) - parseInt(b))
     .forEach((key) => {
@@ -129,11 +127,16 @@ function sortByDay(options: IGraphOptions, startDate: Date) {
   const firstDate = options.dateRange[0];
   const lastDate = options.dateRange[1];
 
+  if (firstDate) firstDate.setHours(0, 0, 0, 0);
+  if (lastDate) lastDate.setHours(0, 0, 0, 0);
+
   visualizerData.value.forEach((row: IChartRow) => {
+    row.bookDate -= 1;
     let bookDate = new Date(
       startDate.getTime() + (row.bookDate - 1) * 24 * 60 * 60 * 1000
     );
 
+    bookDate.setHours(0, 0, 0, 0);
     if (isNaN(bookDate.getTime())) return;
 
     if (bookDate < firstDate || bookDate > lastDate) return;
@@ -142,7 +145,6 @@ function sortByDay(options: IGraphOptions, startDate: Date) {
     if (!orderedData.value[dayKey]) {
       orderedData.value[dayKey] = [];
     }
-
     orderedData.value[dayKey].push(row);
   });
 
@@ -197,7 +199,7 @@ export function useCharts() {
   return {
     visualizerData,
     setVisualizerData,
-    sortDataByMonths: sortData,
+    sortData,
     setGraphData,
     graphData,
     accountList,
