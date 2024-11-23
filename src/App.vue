@@ -88,6 +88,7 @@ watch(isDarkMode, () => {
   background-color: var(--p-gray-500);
   border-color: var(--p-gray-500);
   margin: 20px;
+  position: absolute;
 }
 
 .menu-list li {
@@ -112,7 +113,7 @@ watch(isDarkMode, () => {
 
 .layout {
   display: flex;
-  height: 100%;
+  height: 100vh;
 }
 
 .content {

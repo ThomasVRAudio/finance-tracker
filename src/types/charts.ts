@@ -31,3 +31,7 @@ export interface IGraphOptions {
   dateRange?: Date[];
   year?: number;
 }
+
+export interface IPieChartEntry {
+  [key: string]: number;
+}
