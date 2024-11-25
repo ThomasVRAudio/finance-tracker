@@ -1,27 +1,19 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed } from 'vue';
 import Chart from 'primevue/chart';
-import { usePieCharts } from '../composables/usePieCharts';
 import { $dt } from '@primevue/themes';
+import { IPieChartEntry } from '../types/charts';
 
-const chartOptions = ref();
-const chartData = ref();
-const { topDebit } = usePieCharts();
+const props = defineProps<{
+    data: IPieChartEntry[],
+    mainColor?: string;
+}>();
 
-onMounted(() => {
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-})
 
-watch(topDebit, () => {
-
-    chartData.value = setChartData();
-})
-
-const setChartData = () => {
+const chartData = computed(() => {
     let amounts: number[] = [];
     let labels: string[] = [];
-    topDebit.value?.forEach((debit) => {
+    props.data.forEach((debit) => {
         amounts.push(debit.amount);
         labels.push(debit.name);
     })
@@ -31,9 +23,9 @@ const setChartData = () => {
             {
                 data: amounts,
                 backgroundColor: [
-                    $dt("red.500").value,
+                    $dt(props.mainColor ?? "red.500").value,
                     $dt("blue.400").value,
-                    $dt("green.500").value,
+                    $dt("green.300").value,
                     $dt("yellow.500").value,
                     $dt("purple.500").value,
                     $dt("cyan.300").value,
@@ -47,21 +39,21 @@ const setChartData = () => {
             }
         ],
     }
-}
+})
 
-const setChartOptions = () => {
-    return {
-        plugins: {
-            legend: {
-                display: false
-            }
+const chartOptions = {
+    plugins: {
+        legend: {
+            display: false
         }
-    };
+    },
+    responsize: false,
+    maintainAspectRatio: false
 };
 </script>
 
 <template>
     <div>
-        <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem]" />
+        <Chart type="pie" :height="250" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem]" />
     </div>
 </template>

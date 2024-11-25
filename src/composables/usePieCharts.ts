@@ -3,42 +3,50 @@ import { IChartRow, IPieChartEntry } from "../types/charts";
 import { useCharts } from "./useCharts";
 
 const { orderedData } = useCharts();
-let topDebit = ref<IPieChartEntry[]>();
-let topCredit = ref<IPieChartEntry[]>();
+let topDebit = ref<IPieChartEntry[]>([]);
+let topCredit = ref<IPieChartEntry[]>([]);
 
-function getTopDebit() {
-  let combineTotals: IPieChartEntry[] = [];
+function getTopTen() {
+  topDebit.value?.splice(0, topDebit.value.length);
+  topCredit.value?.splice(0, topCredit.value.length);
+
   if (orderedData.value)
     Object.keys(orderedData.value).forEach((key) => {
       orderedData.value[key].forEach((row: IChartRow) => {
-        let entry = combineTotals.find(
+        let targetArray =
+          row.debitCredit === "Credit" ? topCredit.value : topDebit.value;
+
+        let entry = targetArray.find(
           (entry) => entry.name === row.counterpartyName
         );
-        if (row.debitCredit === "Credit") return;
         if (entry) {
           entry.amount += row.amount;
         } else {
-          combineTotals.push({
+          targetArray.push({
             name: row.counterpartyName,
             amount: row.amount,
           });
         }
       });
     });
-  let topTotals = combineTotals
+  topDebit.value = topDebit.value
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 10);
-  topDebit.value = topTotals;
+
+  topCredit.value = topCredit.value
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 10);
 }
 
 watch(orderedData, () => {
-  getTopDebit();
+  getTopTen();
 });
 
 export function usePieCharts() {
   return {
-    getTopDebit,
+    getTopTen,
     topDebit,
+    topCredit,
   };
 }
 

@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { Card, DatePicker, FloatLabel, MultiSelect, Select } from "primevue";
-import { computed, onMounted, ref, watch } from "vue";
+import { Card, Tag } from "primevue";
+import { onMounted, watch } from "vue";
 import { useCharts } from "../composables/useCharts";
-import { ITableRow } from "../types/tables";
 import StatementsTable from "../components/StatementsTable.vue";
-import { IVisualizerType } from "../types/charts";
-import { $dt } from "@primevue/themes";
-import Chart from "primevue/chart";
 import Graph from "../components/Graph.vue";
 import PieChart from "../components/PieChart.vue";
 import usePieCharts from "../composables/usePieCharts";
 
+const { topDebit, topCredit } = usePieCharts();
+
 const {
   setVisualizerData,
 } = useCharts();
-const { getTopDebit } = usePieCharts();
+
+const { getTopTen } = usePieCharts();
 
 onMounted(() => {
   setVisualizerData();
-  getTopDebit();
+  getTopTen();
 });
+
 </script>
 
 <template>
@@ -32,7 +32,10 @@ onMounted(() => {
             <Graph />
           </div>
           <div class="pie">
-            <PieChart />
+            <PieChart class="pie-chart" :data="topDebit" mainColor="red.500" />
+            <Tag class="tag" value="Debit" severity="danger" />
+            <PieChart class="pie-chart" :data="topCredit" mainColor="green.600" />
+            <Tag class="tag" value="Crebit" severity="success" />
           </div>
         </div>
       </template>
@@ -86,7 +89,22 @@ ul li {
 }
 
 .pie {
-  margin-top: 100px;
-  flex: 1
+  margin-top: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  align-content: space-between;
+}
+
+.pie-chart {
+  margin: var(--margin-s);
+}
+
+.tag {
+  max-width: 100px;
+  min-width: 100px;
+  align-self: center;
+  margin: var(--margin-l)
 }
 </style>
