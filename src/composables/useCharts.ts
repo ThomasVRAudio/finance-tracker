@@ -38,6 +38,12 @@ const { getJsonData, jsonData } = useStatements();
 function setVisualizerData() {
   visualizerData.value.splice(0, visualizerData.value.length);
 
+  if (
+    options.value.dateRange &&
+    options.value.dateRange[0] &&
+    !options.value.dateRange[1]
+  )
+    return;
   let ignored = localStorage.getItem("ignoredAccounts");
   if (ignored) ignoredAccounts.value = JSON.parse(ignored);
 
