@@ -35,7 +35,7 @@ onMounted(() => {
             <PieChart class="pie-chart" :data="topDebit" mainColor="red.500" />
             <Tag class="tag" value="Debit" severity="danger" />
             <PieChart class="pie-chart" :data="topCredit" mainColor="green.600" />
-            <Tag class="tag" value="Crebit" severity="success" />
+            <Tag class="tag" value="Credit" severity="success" />
           </div>
         </div>
       </template>
