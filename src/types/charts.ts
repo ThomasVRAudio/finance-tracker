@@ -33,5 +33,6 @@ export interface IGraphOptions {
 }
 
 export interface IPieChartEntry {
-  [key: string]: number;
+  name: string;
+  amount: number;
 }

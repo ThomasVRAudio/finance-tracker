@@ -4,6 +4,7 @@ import { useCharts } from "./useCharts";
 
 const { orderedData } = useCharts();
 let topDebit = ref<IPieChartEntry[]>();
+let topCredit = ref<IPieChartEntry[]>();
 
 function getTopDebit() {
   let combineTotals: IPieChartEntry[] = [];
