@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Card, Tag } from "primevue";
+import { Card, Message, Tag } from "primevue";
 import { onMounted, watch } from "vue";
 import { useCharts } from "../composables/useCharts";
 import StatementsTable from "../components/StatementsTable.vue";
@@ -9,9 +9,7 @@ import usePieCharts from "../composables/usePieCharts";
 
 const { topDebit, topCredit } = usePieCharts();
 
-const {
-  setVisualizerData,
-} = useCharts();
+const { setVisualizerData, debitAmount, creditAmount } = useCharts();
 
 const { getTopTen } = usePieCharts();
 
@@ -19,7 +17,6 @@ onMounted(() => {
   setVisualizerData();
   getTopTen();
 });
-
 </script>
 
 <template>
@@ -34,9 +31,28 @@ onMounted(() => {
           <div class="pie">
             <PieChart class="pie-chart" :data="topDebit" mainColor="red.500" />
             <Tag class="tag" value="Debit" severity="danger" />
-            <PieChart class="pie-chart" :data="topCredit" mainColor="green.600" />
+            <PieChart
+              class="pie-chart"
+              :data="topCredit"
+              mainColor="green.600"
+            />
             <Tag class="tag" value="Credit" severity="success" />
           </div>
+        </div>
+        <div class="totals">
+          <Message class="message" severity="secondary" variant="simple"
+            ><b>Total Credit: </b>€{{ creditAmount.toFixed(2) }}</Message
+          >
+          <Message class="message" severity="secondary" variant="simple"
+            ><b>Total Debit: </b> €{{ debitAmount.toFixed(2) }}</Message
+          >
+          <Message
+            class="message"
+            :severity="creditAmount - debitAmount > 0 ? 'success' : 'warn'"
+            ><b>Difference: </b> €{{
+              (creditAmount - debitAmount).toFixed(2)
+            }}</Message
+          >
         </div>
       </template>
     </Card>
@@ -50,6 +66,13 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.totals {
+  display: flex;
+
+  .message {
+    margin-right: var(--margin-l);
+  }
+}
 h3 {
   margin: 0 0 1rem;
 }
@@ -66,7 +89,6 @@ ul li {
 .visualizer {
   display: flex;
 }
-
 
 .page {
   display: flex;
@@ -85,7 +107,7 @@ ul li {
 }
 
 .graph {
-  flex: 3
+  flex: 3;
 }
 
 .pie {
@@ -105,6 +127,6 @@ ul li {
   max-width: 100px;
   min-width: 100px;
   align-self: center;
-  margin: var(--margin-l)
+  margin: var(--margin-l);
 }
 </style>

@@ -9,12 +9,12 @@ const removedFiles = ref<string[]>([]);
 const isUploading = ref(false);
 
 function getJsonData() {
-  jsonData.value.splice(0, jsonData.value.length);
+  jsonData.value = [];
   const storedData = localStorage.getItem("statementData");
-  if (storedData) {
-    jsonData.value = JSON.parse(storedData);
-  }
 
+  if (storedData) jsonData.value = JSON.parse(storedData);
+
+  allFileNames.value = [];
   jsonData.value.forEach((statement) => {
     allFileNames.value.push({ name: statement.name });
   });

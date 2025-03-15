@@ -16,7 +16,9 @@ const graphData = ref<IGraphData>({});
 const accountList = ref<string[]>([]);
 const ignoredAccounts = ref<string[]>([]);
 const labels = ref<string[]>([]);
-const options = ref<IGraphOptions>({ year: 2024 });
+const options = ref<IGraphOptions>({ year: 2025 });
+const creditAmount = ref(0);
+const debitAmount = ref(0);
 
 const months = [
   "January",
@@ -37,6 +39,8 @@ const { getJsonData, jsonData } = useStatements();
 
 function setVisualizerData() {
   visualizerData.value.splice(0, visualizerData.value.length);
+  creditAmount.value = 0;
+  debitAmount.value = 0;
 
   if (
     options.value.dateRange &&
@@ -178,8 +182,10 @@ function setGraphData() {
       let debitCredit = row.debitCredit.toLocaleLowerCase().trim();
       if (debitCredit === "debet") {
         graphPoint.debit += row.amount;
+        debitAmount.value += row.amount;
       } else if (debitCredit === "credit") {
         graphPoint.credit += row.amount;
+        creditAmount.value += row.amount;
       } else {
         console.log("not credit or debit: ", debitCredit);
       }
@@ -213,6 +219,8 @@ export function useCharts() {
     labels,
     options,
     orderedData,
+    debitAmount,
+    creditAmount,
     setIgnoredAccounts,
   };
 }
